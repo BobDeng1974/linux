@@ -1,0 +1,19 @@
+1. submit patch
+# mail list
+http://vger.kernel.org/vger-lists.html
+http://www.tuxradar.com/content/newbies-guide-hacking-linux-kernel
+
+
+
+
+# check driver status
+> /sys # busybox find -name "pn*"
+./bus/i2c/drivers/pn544
+> /sys # dmesg | busybox grep pn
+
+# watch kernel messages
+> cat /proc/kmsg
+> dmesg
+
+# print all kernel msg in uart
+ busybox dmesg -n 8

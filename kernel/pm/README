@@ -1,0 +1,22 @@
+
+1 PM building blocks
+ 
+  clock
+
+  suspend/resume
+  Documentation/power/devices.txt 
+
+  runtime pm
+
+  cpuidle
+  Documentation/cpuidle/
+
+  frequency and voltage scaling
+  Documentation/cpu-freq/
+
+  pm QoS
+  Documentation/power/pm_qos_interface.txt
+
+  regulator
+  Documentation/power/regulator.txt
+  www.celinux.org/elc08_presentations/regulator-api-celf.pdf

@@ -1,0 +1,64 @@
+﻿
+How to build:
+--------------------------
+1) In MenuConfig, enable "Kernal Hacking -> KGDB: Kernel Debugger".
+-- Build uImage. Either boot from SD-Card, or flash new uImage into eMMC.
+2) Download gdb from gnu: 7.3.1
+-- to build gdb at host for arm-linux cross-debug)
+      -- ./configure --build=x86 --host=x86 --target=arm-linux
+      -- make
+-- run  "~/gdb-7.3.1/gdb/gdb vmlinux" to launch gdb for cross-debug
+
+How to use kgdb
+--------------------------
+1) In u-boot
+-- setenv 'commonbootargs'  'androidboot.console=ttyO0 console=ttyO0,115200n8 mem=448M@0x80000000 mem=512M@0xA0000000 init=/init rootwait vram=32M omapfb.vram=0:5M no_console_suspend kgdbwait kgdboc=ttyO0,115200n8'
+-- boot
+2) Because of kgdbwait, kernel stops.
+-- Can check this by UART output in MiniCom.
+-- Close MiniCom, when you see kgdb stops. Because gdb and MiniCom will use the same /dev/ttyUSB0
+3) Launch gdb at host for cross-debug
+-- ~/gdb/gdb-7.3.1/gdb/gdb vmlinux
+-- target remote /dev/ttyUSB0
+
+gdb output:
+Note below:
+This GDB was configured as "--host=x86 --target=arm-linux".
+--------------
+GNU gdb (GDB) 7.3.1
+Copyright (C) 2011 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "--host=x86 --target=arm-linux".
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>...
+Reading symbols from /home/exwang/ervine/acclaim/kernel/android-2.6.35/vmlinux...done.
+(gdb) target remote /dev/ttyUSB0
+Remote debugging using /dev/ttyUSB0
+kgdb_breakpoint () at kernel/debug/debug_core.c:966
+966		arch_kgdb_breakpoint();
+<<<<< set breakpoints >>>>>
+(gdb) b aic3100_i2c_init
+Breakpoint 1 at 0xc0026960: file sound/soc/codecs/tlv320aic3100.c, line 2258.
+<<<<< print variables >>>>>
+(gdb) p tlv320aic3100_i2c_driver
+$3 = {class = 0, attach_adapter = 0, detach_adapter = 0, probe = 0xc0305d74 <tlv320aic3100_i2c_probe>, remove = 0, 
+  shutdown = 0, suspend = 0, resume = 0, alert = 0, command = 0, driver = {name = 0xc05197cb "tlv320aic3100-codec", 
+    bus = 0x0, owner = 0x0, mod_name = 0x0, suppress_bind_attrs = false, probe = 0, remove = 0, shutdown = 0, 
+    suspend = 0, resume = 0, groups = 0x0, pm = 0x0, p = 0x0}, id_table = 0xc0428e0c, detect = 0, address_list = 0x0, 
+  clients = {next = 0x0, prev = 0x0}}
+<<<<< check call stack >>>>>
+(gdb) bt
+#0  i2c_add_driver (driver=<optimized out>) at include/linux/i2c.h:433
+#1  aic3100_i2c_init () at sound/soc/codecs/tlv320aic3100.c:2261
+#2  0xc003d588 in do_one_initcall (fn=0xc0026960 <aic3100_i2c_init>) at init/main.c:744
+#3  0xc0008634 in do_initcalls () at init/main.c:784
+#4  do_basic_setup () at init/main.c:806
+#5  kernel_init (unused=<optimized out>) at init/main.c:902
+#6  0xc0085168 in sys_waitid (which=<optimized out>, upid=<optimized out>, infop=0x0, options=19, ru=Cannot access memory at address 0x4
+)
+    at kernel/exit.c:1686
+Backtrace stopped: previous frame inner to this frame (corrupt stack?)
+--------------

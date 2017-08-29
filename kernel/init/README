@@ -1,0 +1,4 @@
+
+__init __exit
+#define __init          __section(.init.text) __cold notrace
+

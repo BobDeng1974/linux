@@ -1,0 +1,10 @@
+
+# check patch
+git diff > /tmp/a.txt
+git show > /tmp/a.txt
+scripts/checkpatch.pl /tmp/a.txt 
+scripts/checkpatch.pl /tmp/a.txt > /tmp/b.txt 
+
+# check file
+scripts/checkpatch.pl -f sound/soc/codecs/tlv320aic3100.c 
+

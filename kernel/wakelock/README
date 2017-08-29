@@ -1,0 +1,3 @@
+echo 15 > /sys/module/wakelock/parameters/debug_mask
+
+echo 15 > /sys/module/userwakelock/parameters/debug_mask
